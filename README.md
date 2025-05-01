@@ -179,17 +179,44 @@ These steps guide you through installing Grafana on an OCI compute instance (VM)
  </pre>
  <br>
  2. Install Grafana<br>
+ 	•	Prepare a file grafana.repo under /etc/yum.repos.d (repo file in this repository><br>
 	•	Download and install Grafana (for Oracle Linux/CentOS):<br>
   <pre>
-sudo tee /etc/yum.repos.d/grafana.repo <<EOF
-[grafana]
-name=Grafana OSS
-baseurl=https://packages.grafana.com/oss/rpm
-repo_gpgcheck=1
-enabled=1
-gpgcheck=1
-gpgkey=https://packages.grafana.com/gpg.key
-EOF
-
 sudo yum install -y grafana
 </pre>
+<br>
+	•	Start and enable Grafana:<br>
+ <pre>
+sudo systemctl start grafana-server
+sudo systemctl enable grafana-server
+
+ </pre>
+<br>
+3. Access Grafana Web UI<br>
+	•	Open port 3000 in your OCI security list.<br>
+	•	In your browser, go to: `http://<your-oci-public-ip>:3000`<br>
+	•	Login with default credentials:<br>
+	•	Username: `admin`<br>
+	•	Password: `admin` (you will be prompted to change this)<br>
+Note: Disable OCI firewall if the port is not accessible<br>
+<br>
+4. Add Loki as a Data Source in Grafana<br>
+	•	In the Grafana UI, click the gear icon (Configuration) on the left.<br>
+	•	Select Data Sources > Add data source.<br>
+	•	Search for and select Loki as the data source type.<br>
+	•	In the HTTP URL field, enter your Loki server’s address, e.g.:<br>
+	•	`http://<loki-server-ip>:3100`<br>
+	•	Click Save & Test to verify the connection.<br>
+<br>
+5. Explore and Visualize Logs<br>
+	•	Click Explore in the left menu.<br>
+	•	In the Query field, select your Loki data source.<br>
+	•	Use label filters (e.g., `{job="varlogs"}`) to view logs shipped by Promtail or other agents.<br>
+	•	You can create dashboards and panels to visualize log data as needed.<br>
+<br>
+6. (Optional) Secure and Harden Your Setup<br>
+	•	Change default passwords and restrict access to Grafana.<br>
+	•	Consider enabling HTTPS for the Grafana web interface.<br>
+	•	Regularly update Grafana and plugins.<br>
+ <br>
+ There you go, you have configured Loki to receive logs through Promtail, and have setup Grafana to use Loki as a Data Source for logs visualization.<br>
